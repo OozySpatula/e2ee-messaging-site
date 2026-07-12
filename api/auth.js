@@ -1,6 +1,4 @@
 import argon2 from "argon2";
-import crypto from "crypto";
-
 import { supabase } from "./supabase.js";
 
 
@@ -176,55 +174,6 @@ export default async function handler(req, res) {
 
             }
 
-
-
-            const token =
-                crypto.randomBytes(32)
-                    .toString("hex");
-
-
-
-            const tokenHash =
-                crypto
-                    .createHash("sha256")
-                    .update(token)
-                    .digest("hex");
-
-
-
-            await supabase
-                .from("sessions")
-                .insert({
-
-                    user_id: user.id,
-
-                    token_hash:
-                        tokenHash,
-
-                    expires_at:
-                        new Date(
-                            Date.now()
-                            + 1000 * 60 * 60 * 24 * 7
-                        )
-
-                });
-
-
-
-            res.setHeader(
-              "Set-Cookie",
-              [
-                  `session=${token}`,
-                  "HttpOnly",
-                  "SameSite=Strict",
-                  "Secure",
-                  "Max-Age=604800",
-                  "Path=/"
-              ].join("; ")
-            );
-
-
-
             return res.json({
 
                 message:
@@ -236,44 +185,6 @@ export default async function handler(req, res) {
             });
 
         }
-
-        if (action === "logout") {
-
-          const token =
-              req.cookies?.session;
-
-          if (token) {
-
-              const tokenHash =
-                  crypto
-                      .createHash("sha256")
-                      .update(token)
-                      .digest("hex");
-
-              await supabase
-                  .from("sessions")
-                  .delete()
-                  .eq("token_hash", tokenHash);
-
-          }
-
-          res.setHeader(
-              "Set-Cookie",
-              [
-                  "session=",
-                  "HttpOnly",
-                  "SameSite=Strict",
-                  "Secure",
-                  "Max-Age=0",
-                  "Path=/"
-              ].join("; ")
-          );
-
-          return res.json({
-              message: "Logged out"
-          });
-
-      }
 
 
 
