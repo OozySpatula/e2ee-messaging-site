@@ -93,17 +93,13 @@ export default async function handler(req, res) {
 
 
             const passwordHash =
-              await argon2.hash(password, {
+            await argon2.hash(password, {
+                type: argon2.argon2id,
 
-                  type: argon2.argon2id,
-
-                  memoryCost: 19456, // ~19 MB
-                  timeCost: 2,
-                  parallelism: 1
-
-              });
-
-
+                memoryCost: 32768, // 32 MB
+                timeCost: 3,
+                parallelism: 1
+            });
 
             const { error } =
                 await supabase

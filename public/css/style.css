@@ -2,14 +2,15 @@
     box-sizing: border-box;
 }
 
-
 body {
 
     margin: 0;
 
-    min-height: 100vh;
+    width: 100vw;
+    height: 100vh;
 
     display: flex;
+
     justify-content: center;
     align-items: center;
 
@@ -23,15 +24,15 @@ body {
     background: #111827;
 
     color: white;
+
 }
 
 
 .container {
 
-    width: 100%;
-    max-width: 420px;
+    width: min(90vw, 420px);
 
-    padding: 20px;
+    max-height: 95vh;
 
 }
 
@@ -40,28 +41,36 @@ body {
 
     background: #1f2937;
 
-    padding: 32px;
+    padding: clamp(1rem, 4vh, 2rem);
 
-    border-radius: 16px;
+    border-radius: clamp(10px, 2vw, 16px);
 
 }
 
+
+/* Headings */
 
 h1 {
 
     text-align: center;
 
-    margin-bottom: 30px;
+    margin: 0 0 clamp(0.8rem, 3vh, 1.8rem);
+
+    font-size: clamp(1.5rem, 4vh, 2rem);
 
 }
 
 
 h2 {
 
-    margin-bottom: 20px;
+    margin: 0 0 clamp(0.5rem, 2vh, 1.2rem);
+
+    font-size: clamp(1.1rem, 3vh, 1.4rem);
 
 }
 
+
+/* Form */
 
 form {
 
@@ -69,23 +78,25 @@ form {
 
     flex-direction: column;
 
-    gap: 10px;
+    gap: clamp(0.35rem, 1.2vh, 0.8rem);
 
 }
 
 
 label {
 
-    font-size: 14px;
+    font-size: clamp(0.75rem, 1.8vh, 0.9rem);
 
 }
 
 
 input {
 
-    padding: 12px;
+    width: 100%;
 
-    border-radius: 8px;
+    padding: clamp(0.5rem, 1.5vh, 0.75rem);
+
+    border-radius: clamp(6px, 1vw, 8px);
 
     border: 1px solid #374151;
 
@@ -93,16 +104,16 @@ input {
 
     color: white;
 
-    font-size: 16px;
+    font-size: clamp(0.85rem, 2vh, 1rem);
 
 }
 
 
 button {
 
-    padding: 12px;
+    padding: clamp(0.5rem, 1.5vh, 0.75rem);
 
-    border-radius: 8px;
+    border-radius: clamp(6px, 1vw, 8px);
 
     border: none;
 
@@ -112,14 +123,7 @@ button {
 
     cursor: pointer;
 
-    font-size: 16px;
-
-}
-
-
-button:hover {
-
-    background: #1d4ed8;
+    font-size: clamp(0.85rem, 2vh, 1rem);
 
 }
 
@@ -137,23 +141,9 @@ button:hover {
 
 .message {
 
-    min-height: 20px;
+    min-height: clamp(15px, 2vh, 20px);
 
-    font-size: 14px;
-
-}
-
-
-.message.error {
-
-    color: #f87171;
-
-}
-
-
-.message.success {
-
-    color: #4ade80;
+    font-size: clamp(0.75rem, 1.8vh, 0.9rem);
 
 }
 
@@ -161,5 +151,7 @@ button:hover {
 small {
 
     color: #9ca3af;
+
+    font-size: clamp(0.65rem, 1.6vh, 0.8rem);
 
 }
