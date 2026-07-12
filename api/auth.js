@@ -215,20 +215,16 @@ export default async function handler(req, res) {
 
 
 
-            res.cookie(
-                "session",
-                token,
-                {
-                    httpOnly: true,
-                    secure: true,
-                    sameSite: "strict",
-                    maxAge:
-                        1000 *
-                        60 *
-                        60 *
-                        24 *
-                        7
-                }
+            res.setHeader(
+              "Set-Cookie",
+              [
+                  `session=${token}`,
+                  "HttpOnly",
+                  "SameSite=Strict",
+                  "Secure",
+                  "Max-Age=604800",
+                  "Path=/"
+              ].join("; ")
             );
 
 
