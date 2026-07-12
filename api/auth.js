@@ -28,9 +28,6 @@ function validatePassword(password) {
 
 export default async function handler(req, res) {
 
-    console.time("total request");
-
-
     if (req.method !== "POST") {
 
         return res.status(405).json({
@@ -148,17 +145,12 @@ export default async function handler(req, res) {
 
         if (action === "login") {
 
-            console.time("supabase query");
             const { data: user } =
                 await supabase
                     .from("users")
                     .select("*")
                     .eq("username", username)
                     .maybeSingle();
-
-            console.timeEnd("supabase query");
-
-            console.time("total request");
 
             if (!user) {
 
