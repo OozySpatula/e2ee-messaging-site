@@ -22,7 +22,24 @@ export function setupAuth() {
 
     const registerMessage =
         document.querySelector("#register-message");
+    
+    const dashboardView =
+        document.querySelector("#dashboard-view");
 
+    const dashboardUsername =
+        document.querySelector("#dashboard-username");
+
+    const dashboardUserId =
+        document.querySelector("#dashboard-user-id");
+
+    const loginView =
+        document.querySelector("#login-view");
+    
+    const registerView =
+        document.querySelector("#register-view");
+    
+    const authCard =
+        document.querySelector("#auth-card");
 
     loginForm.addEventListener(
         "submit",
@@ -61,11 +78,17 @@ export function setupAuth() {
                         password
                     );
 
-                loginMessage.textContent =
-                    result.message;
+                loginMessage.textContent = "";
 
-                loginMessage.className =
-                    "message success";
+                authCard.hidden = true;
+
+                dashboardView.hidden = false;
+
+                dashboardUsername.textContent =
+                    result.user.username;
+
+                dashboardUserId.textContent =
+                    result.user.id;
 
             } catch (error) {
 

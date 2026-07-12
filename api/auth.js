@@ -93,8 +93,7 @@ export default async function handler(req, res) {
             const passwordHash =
             await argon2.hash(password, {
                 type: argon2.argon2id,
-
-                memoryCost: 32768, // 32 MB
+                memoryCost: 65536, // 32 MB
                 timeCost: 3,
                 parallelism: 1
             });
