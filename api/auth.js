@@ -228,11 +228,52 @@ export default async function handler(req, res) {
             return res.json({
 
                 message:
-                    "Logged in"
-
+                    "Logged in",
+                user: {
+                    id: user.id,
+                    username: user.username
+                }
             });
 
         }
+
+        if (action === "logout") {
+
+          const token =
+              req.cookies?.session;
+
+          if (token) {
+
+              const tokenHash =
+                  crypto
+                      .createHash("sha256")
+                      .update(token)
+                      .digest("hex");
+
+              await supabase
+                  .from("sessions")
+                  .delete()
+                  .eq("token_hash", tokenHash);
+
+          }
+
+          res.setHeader(
+              "Set-Cookie",
+              [
+                  "session=",
+                  "HttpOnly",
+                  "SameSite=Strict",
+                  "Secure",
+                  "Max-Age=0",
+                  "Path=/"
+              ].join("; ")
+          );
+
+          return res.json({
+              message: "Logged out"
+          });
+
+      }
 
 
 
