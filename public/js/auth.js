@@ -3,44 +3,41 @@ import {
     validatePassword
 } from "./validators.js";
 
+import {
+    register,
+    login
+} from "./api.js";
+
 
 export function setupAuth() {
-
 
     const loginForm =
         document.querySelector("#login-form");
 
-
     const registerForm =
         document.querySelector("#register-form");
 
-
     const loginMessage =
         document.querySelector("#login-message");
-
 
     const registerMessage =
         document.querySelector("#register-message");
 
 
-
     loginForm.addEventListener(
         "submit",
-        event => {
+        async event => {
 
             event.preventDefault();
 
-
             loginMessage.textContent = "";
-
+            loginMessage.className = "message";
 
             const username =
                 loginForm.username.value.trim();
 
-
             const password =
                 loginForm.password.value;
-
 
 
             if (!username || !password) {
@@ -48,45 +45,59 @@ export function setupAuth() {
                 loginMessage.textContent =
                     "Please enter your credentials.";
 
+                loginMessage.className =
+                    "message error";
+
                 return;
+
             }
 
 
-            loginMessage.textContent =
-                "Login validation passed.";
+            try {
 
-            loginMessage.className =
-                "message success";
+                const result =
+                    await login(
+                        username,
+                        password
+                    );
 
+                loginMessage.textContent =
+                    result.message;
 
-            // TODO:
-            // fetch("/api/login")
+                loginMessage.className =
+                    "message success";
+
+            } catch (error) {
+
+                loginMessage.textContent =
+                    error.message;
+
+                loginMessage.className =
+                    "message error";
+
+            }
+
         }
     );
 
 
-
     registerForm.addEventListener(
         "submit",
-        event => {
+        async event => {
 
             event.preventDefault();
 
-
             registerMessage.textContent = "";
-
+            registerMessage.className = "message";
 
             const username =
                 registerForm.username.value.trim();
 
-
             const password =
                 registerForm.password.value;
 
-
             const confirm =
                 registerForm.confirm.value;
-
 
 
             if (!validateUsername(username)) {
@@ -94,9 +105,12 @@ export function setupAuth() {
                 registerMessage.textContent =
                     "Invalid username.";
 
-                return;
-            }
+                registerMessage.className =
+                    "message error";
 
+                return;
+
+            }
 
 
             if (!validatePassword(password)) {
@@ -104,9 +118,12 @@ export function setupAuth() {
                 registerMessage.textContent =
                     "Password does not meet requirements.";
 
-                return;
-            }
+                registerMessage.className =
+                    "message error";
 
+                return;
+
+            }
 
 
             if (password !== confirm) {
@@ -114,20 +131,39 @@ export function setupAuth() {
                 registerMessage.textContent =
                     "Passwords do not match.";
 
+                registerMessage.className =
+                    "message error";
+
                 return;
+
             }
 
 
+            try {
 
-            registerMessage.textContent =
-                "Registration validation passed.";
+                const result =
+                    await register(
+                        username,
+                        password
+                    );
 
-            registerMessage.className =
-                "message success";
+                registerMessage.textContent =
+                    result.message;
 
+                registerMessage.className =
+                    "message success";
 
-            // TODO:
-            // fetch("/api/register")
+                registerForm.reset();
+
+            } catch (error) {
+
+                registerMessage.textContent =
+                    error.message;
+
+                registerMessage.className =
+                    "message error";
+
+            }
 
         }
     );
