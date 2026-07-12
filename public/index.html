@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>E2EE Messenger</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<main class="container">
+
+    <section class="card">
+
+        <h1>E2EE Messenger</h1>
+
+
+        <!-- Login -->
+
+        <div id="login-view">
+
+            <h2>Login</h2>
+
+            <form id="login-form">
+
+                <label for="login-username">
+                    Username
+                </label>
+
+                <input
+                    id="login-username"
+                    name="username"
+                    type="text"
+                    autocomplete="username"
+                    required
+                >
+
+
+                <label for="login-password">
+                    Password
+                </label>
+
+                <input
+                    id="login-password"
+                    name="password"
+                    type="password"
+                    autocomplete="current-password"
+                    required
+                >
+
+
+                <p
+                    id="login-message"
+                    class="message"
+                    role="alert"
+                    aria-live="polite">
+                </p>
+
+
+                <button type="submit">
+                    Login
+                </button>
+
+            </form>
+
+
+            <p>
+                Don't have an account?
+                <button
+                    class="link-button"
+                    id="show-register">
+                    Register
+                </button>
+            </p>
+
+        </div>
+
+
+        <!-- Register -->
+
+        <div id="register-view" hidden>
+
+            <h2>Create Account</h2>
+
+
+            <form id="register-form">
+
+
+                <label for="register-username">
+                    Username
+                </label>
+
+                <input
+                    id="register-username"
+                    name="username"
+                    type="text"
+                    minlength="3"
+                    maxlength="20"
+                    autocomplete="username"
+                    required
+                >
+
+
+                <label for="register-password">
+                    Password
+                </label>
+
+                <input
+                    id="register-password"
+                    name="password"
+                    type="password"
+                    autocomplete="new-password"
+                    required
+                >
+
+
+                <small>
+                    Minimum 12 characters, uppercase,
+                    lowercase, number, special character
+                </small>
+
+
+                <label for="register-confirm">
+                    Confirm Password
+                </label>
+
+                <input
+                    id="register-confirm"
+                    name="confirm"
+                    type="password"
+                    autocomplete="new-password"
+                    required
+                >
+
+
+                <p
+                    id="register-message"
+                    class="message"
+                    role="alert"
+                    aria-live="polite">
+                </p>
+
+
+                <button type="submit">
+                    Register
+                </button>
+
+
+            </form>
+
+
+            <p>
+                Already have an account?
+
+                <button
+                    class="link-button"
+                    id="show-login">
+                    Login
+                </button>
+            </p>
+
+
+        </div>
+
+
+    </section>
+
+</main>
+
+
+<script
+    type="module"
+    src="js/app.js">
+</script>
+
+</body>
+
+</html>
