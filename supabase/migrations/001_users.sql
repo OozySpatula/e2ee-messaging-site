@@ -20,8 +20,3 @@ CREATE TABLE users (
         DEFAULT NOW()
 
 );
-
-
--- Helpful for username lookups during login
-CREATE INDEX users_username_index
-ON users(username);
