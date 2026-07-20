@@ -13,3 +13,7 @@ create table sessions (
     created_at timestamptz default now()
 
 );
+
+grant select, insert, update, delete
+on public.sessions
+to service_role;

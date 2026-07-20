@@ -9,3 +9,7 @@ create table friends (
     created_at timestamptz default now()
 
 );
+
+grant select, insert, update, delete
+on public.friends
+to service_role;

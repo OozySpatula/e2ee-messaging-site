@@ -10,6 +10,18 @@ const loginView =
 const registerView =
     document.querySelector("#register-view");
 
+const loginForm =
+    document.querySelector("#login-form");
+
+const registerForm =
+    document.querySelector("#register-form");
+
+const loginMessage =
+    document.querySelector("#login-message");
+
+const registerMessage =
+    document.querySelector("#register-message");
+    
 
 
 document
@@ -19,6 +31,8 @@ document
         () => {
 
             loginView.hidden = true;
+            loginForm.reset();
+            loginMessage.textContent = "";
 
             registerView.hidden = false;
 
@@ -34,6 +48,8 @@ document
         () => {
 
             registerView.hidden = true;
+            registerForm.reset();
+            registerMessage.textContent = "";
 
             loginView.hidden = false;
 

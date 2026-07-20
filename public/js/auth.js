@@ -5,11 +5,11 @@ import {
 
 import {
     register,
-    login
+    login,
+    getMe
 } from "./api.js";
 
-
-export function setupAuth() {
+export async function setupAuth() {
 
     const loginForm =
         document.querySelector("#login-form");
@@ -40,6 +40,32 @@ export function setupAuth() {
     
     const authCard =
         document.querySelector("#auth-card");
+
+    try {
+
+        const result =
+            await getMe();
+
+
+        authCard.hidden = true;
+
+        dashboardView.hidden = false;
+
+
+        dashboardUsername.textContent =
+            result.user.username;
+
+
+        dashboardUserId.textContent =
+            result.user.id;
+
+    } catch {
+
+        // Not logged in
+        authCard.hidden = false;
+        dashboardView.hidden = true;
+
+    }
 
     loginForm.addEventListener(
         "submit",
@@ -77,6 +103,8 @@ export function setupAuth() {
                         username,
                         password
                     );
+                
+                loginForm.reset();
 
                 loginMessage.textContent = "";
 
@@ -169,6 +197,8 @@ export function setupAuth() {
                         username,
                         password
                     );
+                
+                registerForm.reset()
 
                 registerMessage.textContent =
                     result.message;

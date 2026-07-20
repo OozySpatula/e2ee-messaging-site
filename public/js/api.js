@@ -126,3 +126,9 @@ export function getFriends() {
     );
 
 }
+
+export function getMe() {
+
+    return request("/me");
+
+}

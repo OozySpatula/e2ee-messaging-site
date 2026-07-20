@@ -20,3 +20,7 @@ CREATE TABLE users (
         DEFAULT NOW()
 
 );
+
+grant select, insert, update, delete
+on public.users
+to service_role;
