@@ -1,8 +1,18 @@
 import { supabase } from "./supabase.js";
+import { authenticate } from "./authenticate.js";
 
 export default async function handler(req, res) {
 
     try {
+
+        const userId = await authenticate(req);
+
+
+        if (!userId) {
+            return res.status(401).json({
+                message: "Unauthorized"
+            });
+        }
 
         //
         // Send friend request
@@ -14,12 +24,11 @@ export default async function handler(req, res) {
         ) {
 
             const {
-                senderId,
                 receiverId
             } = req.body;
 
 
-            if (senderId === receiverId) {
+            if (userId === receiverId) {
 
                 return res.status(400).json({
                     message:
@@ -52,7 +61,7 @@ export default async function handler(req, res) {
                     .from("friends")
                     .select("id")
                     .or(
-                        `and(user1_id.eq.${senderId},user2_id.eq.${receiverId}),and(user1_id.eq.${receiverId},user2_id.eq.${senderId})`
+                        `and(user1_id.eq.${userId},user2_id.eq.${receiverId}),and(user1_id.eq.${receiverId},user2_id.eq.${userId})`
                     )
                     .maybeSingle();
 
@@ -72,7 +81,7 @@ export default async function handler(req, res) {
                     .from("friend_requests")
                     .select("id")
                     .or(
-                        `and(sender_id.eq.${senderId},receiver_id.eq.${receiverId}),and(sender_id.eq.${receiverId},receiver_id.eq.${senderId})`
+                        `and(sender_id.eq.${userId},receiver_id.eq.${receiverId}),and(sender_id.eq.${receiverId},receiver_id.eq.${userId})`
                     )
                     .maybeSingle();
 
@@ -93,7 +102,7 @@ export default async function handler(req, res) {
                     .insert({
 
                         sender_id:
-                            senderId,
+                            userId,
 
                         receiver_id:
                             receiverId

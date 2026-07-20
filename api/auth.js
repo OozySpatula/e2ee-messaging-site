@@ -1,6 +1,6 @@
 import argon2 from "argon2";
 import { supabase } from "./supabase.js";
-
+import crypto from "crypto";
 
 function validateUsername(username) {
 
@@ -93,7 +93,7 @@ export default async function handler(req, res) {
             const passwordHash =
             await argon2.hash(password, {
                 type: argon2.argon2id,
-                memoryCost: 65536, // 32 MB
+                memoryCost: 65536, // 64 MB
                 timeCost: 3,
                 parallelism: 1
             });
@@ -137,13 +137,13 @@ export default async function handler(req, res) {
 
 
         if (action === "login") {
-
             const { data: user } =
                 await supabase
                     .from("users")
                     .select("*")
                     .eq("username", username)
                     .maybeSingle();
+
 
             if (!user) {
 
@@ -155,13 +155,11 @@ export default async function handler(req, res) {
             }
 
 
-
             const valid =
                 await argon2.verify(
                     user.password_hash,
                     password
                 );
-
 
 
             if (!valid) {
@@ -173,14 +171,76 @@ export default async function handler(req, res) {
 
             }
 
+
+            // Create session token
+            const token =
+                crypto.randomBytes(32)
+                    .toString("hex");
+
+
+            // Hash token before storing
+            const tokenHash =
+                crypto
+                    .createHash("sha256")
+                    .update(token)
+                    .digest("hex");
+
+
+            const { error: sessionError } =
+                await supabase
+                    .from("sessions")
+                    .insert({
+
+                        user_id: user.id,
+
+                        token_hash:
+                            tokenHash,
+
+                        expires_at:
+                            new Date(
+                                Date.now()
+                                + 1000 * 60 * 60 * 24 * 7
+                            )
+
+                    });
+
+
+            if (sessionError) {
+
+                console.error(sessionError);
+
+                return res.status(500).json({
+                    message:
+                        "Could not create session"
+                });
+
+            }
+
+
+            // Send token as HttpOnly cookie
+            res.setHeader(
+                "Set-Cookie",
+                [
+                    `session=${token}`,
+                    "HttpOnly",
+                    "SameSite=Strict",
+                    "Secure",
+                    "Max-Age=604800",
+                    "Path=/"
+                ].join("; ")
+            );
+
+
             return res.json({
 
                 message:
                     "Logged in",
+
                 user: {
                     id: user.id,
                     username: user.username
                 }
+
             });
 
         }
