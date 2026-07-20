@@ -6,6 +6,8 @@ async function request(endpoint, options = {}) {
             "Content-Type": "application/json"
         },
 
+        credentials: "include",
+
         ...options
 
     });
