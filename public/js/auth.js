@@ -197,8 +197,6 @@ export async function setupAuth() {
                         username,
                         password
                     );
-                
-                registerForm.reset()
 
                 registerMessage.textContent =
                     result.message;

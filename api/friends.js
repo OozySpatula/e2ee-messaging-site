@@ -142,12 +142,18 @@ export default async function handler(req, res) {
             } = req.body;
 
 
-            const { data: request } =
+            const { data: request, error } =
                 await supabase
                     .from("friend_requests")
                     .select("*")
                     .eq("id", requestId)
+                    .eq("receiver_id", userId)
                     .maybeSingle();
+
+
+            if (error) {
+                throw error;
+            }
 
 
             if (!request) {
@@ -159,19 +165,18 @@ export default async function handler(req, res) {
 
             }
 
+            const { error: friendError } =
+                await supabase
+                    .from("friends")
+                    .insert({
+                        user1_id: request.sender_id,
+                        user2_id: request.receiver_id
+                    });
 
-            await supabase
-                .from("friends")
-                .insert({
 
-                    user1_id:
-                        request.sender_id,
-
-                    user2_id:
-                        request.receiver_id
-
-                });
-
+            if (friendError) {
+                throw friendError;
+            }
 
             await supabase
                 .from("friend_requests")
@@ -198,10 +203,6 @@ export default async function handler(req, res) {
             req.method === "GET" &&
             req.query.action === "requests"
         ) {
-
-            const { userId } =
-                req.query;
-
 
             const { data } =
                 await supabase
@@ -231,9 +232,6 @@ export default async function handler(req, res) {
             req.query.action === "friends"
         ) {
 
-            const { userId } =
-                req.query;
-
 
             const { data } =
                 await supabase
@@ -254,7 +252,7 @@ export default async function handler(req, res) {
 
 
             const friends =
-                data.map(friend => {
+                (data ?? []).map(friend => {
 
                     return friend.user1.id === userId
                         ? friend.user2
