@@ -69,10 +69,9 @@ export function login(username, password) {
 
 }
 
-export function sendFriendRequest(
-    senderId,
-    receiverId
-) {
+
+
+export function sendFriendRequest(receiverId) {
 
     return request("/friends", {
 
@@ -81,9 +80,6 @@ export function sendFriendRequest(
         body: JSON.stringify({
 
             action: "request",
-
-            senderId,
-
             receiverId
 
         })
@@ -92,9 +88,9 @@ export function sendFriendRequest(
 
 }
 
-export function acceptFriendRequest(
-    requestId
-) {
+
+
+export function acceptFriendRequest(requestId) {
 
     return request("/friends", {
 
@@ -103,7 +99,6 @@ export function acceptFriendRequest(
         body: JSON.stringify({
 
             action: "accept",
-
             requestId
 
         })
@@ -112,22 +107,22 @@ export function acceptFriendRequest(
 
 }
 
-export function getFriendRequests(
-    userId
-) {
+
+
+export function getFriendRequests() {
 
     return request(
-        `/friends?action=requests&userId=${userId}`
+        "/friends?action=requests"
     );
 
 }
 
-export function getFriends(
-    userId
-) {
+
+
+export function getFriends() {
 
     return request(
-        `/friends?action=friends&userId=${userId}`
+        "/friends?action=friends"
     );
 
 }
