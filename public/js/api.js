@@ -6,8 +6,6 @@ async function request(endpoint, options = {}) {
             "Content-Type": "application/json"
         },
 
-        credentials: "include",
-
         ...options
 
     });
@@ -66,5 +64,68 @@ export function login(username, password) {
         })
 
     });
+
+}
+
+export function sendFriendRequest(
+    senderId,
+    receiverId
+) {
+
+    return request("/friends", {
+
+        method: "POST",
+
+        body: JSON.stringify({
+
+            action: "request",
+
+            senderId,
+
+            receiverId
+
+        })
+
+    });
+
+}
+
+export function acceptFriendRequest(
+    requestId
+) {
+
+    return request("/friends", {
+
+        method: "POST",
+
+        body: JSON.stringify({
+
+            action: "accept",
+
+            requestId
+
+        })
+
+    });
+
+}
+
+export function getFriendRequests(
+    userId
+) {
+
+    return request(
+        `/friends?action=requests&userId=${userId}`
+    );
+
+}
+
+export function getFriends(
+    userId
+) {
+
+    return request(
+        `/friends?action=friends&userId=${userId}`
+    );
 
 }
