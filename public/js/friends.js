@@ -1,34 +1,73 @@
 import {
+
     sendFriendRequest,
+
     acceptFriendRequest,
+
     getFriendRequests,
-    getFriends
+
+    getFriends,
+
+    sendMessage,
+
+    getMessages,
+
+    getMe
+
 } from "./api.js";
 
 
-export function setupFriends(userId) {
+export async function setupFriends() {
 
+    let user;
+
+    try {
+
+        const result =
+            await getMe();
+
+        user =
+            result.user;
+
+    } catch {
+
+        return;
+
+    }
 
     const friendRequestForm =
         document.querySelector("#friend-request-form");
 
-
     const friendIdInput =
         document.querySelector("#friend-id");
 
-
-    const requestsList =
+    const friendRequestsList =
         document.querySelector("#friend-requests-list");
-
 
     const friendsList =
         document.querySelector("#friends-list");
 
+    const messageForm =
+        document.querySelector("#message-form");
+
+    const messageInput =
+        document.querySelector("#message-input");
+
+    const messagesDiv =
+        document.querySelector("#messages");
+
+    const chatTitle =
+        document.querySelector("#chat-title");
 
 
-    //
-    // Send friend request
-    //
+    let currentFriend = null;
+
+
+    loadFriendRequests();
+
+    loadFriends();
+
+
 
     friendRequestForm.addEventListener(
         "submit",
@@ -36,36 +75,21 @@ export function setupFriends(userId) {
 
             event.preventDefault();
 
-
-            const receiverId =
-                friendIdInput.value.trim();
-
-
-            if (!receiverId) {
-                return;
-            }
-
-
             try {
 
                 await sendFriendRequest(
-                    receiverId
+                    friendIdInput.value.trim()
                 );
-
-
-                friendIdInput.value = "";
-
 
                 alert(
                     "Friend request sent."
                 );
 
+                friendRequestForm.reset();
 
-            } catch(error) {
+            } catch (error) {
 
-                alert(
-                    error.message
-                );
+                alert(error.message);
 
             }
 
@@ -74,91 +98,115 @@ export function setupFriends(userId) {
 
 
 
-    //
-    // Load incoming requests
-    //
+    messageForm.addEventListener(
+        "submit",
+        async event => {
 
-    async function loadRequests() {
+            event.preventDefault();
+
+            if (!currentFriend) {
+                return;
+            }
+
+            const message =
+                messageInput.value.trim();
+
+            if (!message) {
+                return;
+            }
+
+
+            try {
+
+                //
+                // Replace with encrypted text later.
+                //
+
+                await sendMessage(
+
+                    currentFriend.id,
+
+                    message
+
+                );
+
+
+                messageInput.value = "";
+
+                loadConversation(
+                    currentFriend
+                );
+
+            } catch (error) {
+
+                alert(error.message);
+
+            }
+
+        }
+    );
+
+
+
+    async function loadFriendRequests() {
 
         try {
 
             const requests =
                 await getFriendRequests();
 
-
-            // Safely clear list
-            requestsList.replaceChildren();
+            friendRequestsList.innerHTML = "";
 
 
+            if (requests.length === 0) {
 
-            requests.forEach(request => {
+                friendRequestsList.innerHTML =
+                    "<li>No pending requests.</li>";
 
+                return;
+
+            }
+
+
+            for (const request of requests) {
 
                 const li =
                     document.createElement("li");
 
-
-                const name =
-                    document.createElement("span");
-
-
-                name.textContent =
-                    request.sender.username;
-
+                li.textContent =
+                    request.sender.username + " ";
 
 
                 const button =
                     document.createElement("button");
 
-
                 button.textContent =
                     "Accept";
-
 
 
                 button.addEventListener(
                     "click",
                     async () => {
 
-                        try {
+                        await acceptFriendRequest(
+                            request.id
+                        );
 
-                            await acceptFriendRequest(
-                                request.id
-                            );
+                        loadFriendRequests();
 
-
-                            loadRequests();
-
-                            loadFriends();
-
-
-                        } catch(error) {
-
-                            alert(
-                                error.message
-                            );
-
-                        }
+                        loadFriends();
 
                     }
                 );
 
 
+                li.appendChild(button);
 
-                li.append(
-                    name,
-                    button
-                );
+                friendRequestsList.appendChild(li);
 
+            }
 
-                requestsList.appendChild(
-                    li
-                );
-
-            });
-
-
-        } catch(error) {
+        } catch (error) {
 
             console.error(error);
 
@@ -168,85 +216,61 @@ export function setupFriends(userId) {
 
 
 
-    //
-    // Load friends
-    //
-
     async function loadFriends() {
-
 
         try {
 
             const friends =
                 await getFriends();
 
-
-            // Safely clear list
-            friendsList.replaceChildren();
-
+            friendsList.innerHTML = "";
 
 
             if (friends.length === 0) {
 
-                const li =
-                    document.createElement("li");
-
-
-                li.textContent =
-                    "No friends yet.";
-
-
-                friendsList.appendChild(
-                    li
-                );
-
+                friendsList.innerHTML =
+                    "<li>No friends yet.</li>";
 
                 return;
+
             }
 
 
-
-            friends.forEach(friend => {
-
+            for (const friend of friends) {
 
                 const li =
                     document.createElement("li");
 
-
-
                 const button =
                     document.createElement("button");
-
-
-                button.className =
-                    "open-chat";
 
 
                 button.textContent =
                     friend.username;
 
 
+                button.addEventListener(
+                    "click",
+                    () => {
 
-                button.dataset.userId =
-                    friend.id;
+                        currentFriend =
+                            friend;
 
+                        loadConversation(
+                            friend
+                        );
 
-
-                li.appendChild(
-                    button
+                    }
                 );
 
 
-                friendsList.appendChild(
-                    li
-                );
+                li.appendChild(button);
 
+                friendsList.appendChild(li);
 
-            });
+            }
 
-
-
-        } catch(error) {
+        } catch (error) {
 
             console.error(error);
 
@@ -256,13 +280,42 @@ export function setupFriends(userId) {
 
 
 
-    //
-    // Initial load
-    //
+    async function loadConversation(friend) {
 
-    loadRequests();
+        chatTitle.textContent =
+            friend.username;
 
-    loadFriends();
+        messagesDiv.innerHTML = "";
 
+
+        try {
+
+            const messages =
+                await getMessages(
+                    friend.id
+                );
+
+
+            for (const message of messages) {
+
+                const p =
+                    document.createElement("p");
+
+                p.textContent =
+                    message.sender_id === user.id
+                        ? `You: ${message.ciphertext}`
+                        : `${friend.username}: ${message.ciphertext}`;
+
+                messagesDiv.appendChild(p);
+
+            }
+
+        } catch (error) {
+
+            console.error(error);
+
+        }
+
+    }
 
 }

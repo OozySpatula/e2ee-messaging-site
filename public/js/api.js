@@ -132,3 +132,38 @@ export function getMe() {
     return request("/me");
 
 }
+
+export function sendMessage(
+    receiverId,
+    ciphertext
+) {
+
+    return request("/messages", {
+
+        method: "POST",
+
+        body: JSON.stringify({
+
+            action: "send",
+
+            receiverId,
+
+            ciphertext
+
+        })
+
+    });
+
+}
+
+export function getMessages(
+    friendId
+) {
+
+    return request(
+
+        `/messages?action=list&friendId=${friendId}`
+
+    );
+
+}

@@ -172,98 +172,101 @@
 
             <h2>Dashboard</h2>
 
-            <!-- Account -->
+            <aside id="sidebar">
 
-            <section class="dashboard-section">
+                <!-- Account -->
 
-                <h3>Your Account</h3>
+                <section class="dashboard-section">
 
-                <p>
-                    <strong>Username:</strong>
-                    <span id="dashboard-username"></span>
-                </p>
+                    <h3>Your Account</h3>
 
-                <p>
-                    <strong>User ID:</strong>
-                    <code id="dashboard-user-id"></code>
-                </p>
+                    <p>
+                        <strong>Username:</strong>
+                        <span id="dashboard-username"></span>
+                    </p>
 
-            </section>
+                    <p>
+                        <strong>User ID:</strong>
+                        <code id="dashboard-user-id"></code>
+                    </p>
 
-
-            <!-- Add Friend -->
-
-            <section class="dashboard-section">
-
-                <h3>Add Friend</h3>
-
-                <form id="friend-request-form" method="post">
-
-                    <label for="friend-id">
-                        Friend User ID
-                    </label>
-
-                    <input
-                        id="friend-id"
-                        name="friend-id"
-                        type="text"
-                        placeholder="Enter user ID"
-                        required
-                    >
-
-                    <button type="submit">
-                        Send Friend Request
-                    </button>
-
-                </form>
-
-            </section>
+                </section>
 
 
-            <!-- Friend Requests -->
+                <!-- Add Friend -->
 
-            <section class="dashboard-section">
+                <section class="dashboard-section">
 
-                <h3>Friend Requests</h3>
+                    <h3>Add Friend</h3>
 
-                <ul id="friend-requests-list">
+                    <form id="friend-request-form" method="post">
 
-                    <!-- Example -->
-                    <!--
-                    <li>
-                        <span>Alice</span>
+                        <label for="friend-id">
+                            Friend User ID
+                        </label>
 
-                        <button class="accept-request">
-                            Accept
+                        <input
+                            id="friend-id"
+                            name="friend-id"
+                            type="text"
+                            placeholder="Enter user ID"
+                            required
+                        >
+
+                        <button type="submit">
+                            Send Friend Request
                         </button>
-                    </li>
-                    -->
 
-                </ul>
+                    </form>
 
-            </section>
+                </section>
 
 
-            <!-- Friends -->
+                <!-- Friend Requests -->
 
-            <section class="dashboard-section">
+                <section class="dashboard-section">
 
-                <h3>Friends</h3>
+                    <h3>Friend Requests</h3>
 
-                <ul id="friends-list">
+                    <ul id="friend-requests-list">
 
-                    <!-- Example -->
-                    <!--
-                    <li>
-                        <button class="open-chat">
-                            Bob
-                        </button>
-                    </li>
-                    -->
+                        <!-- Example -->
+                        <!--
+                        <li>
+                            <span>Alice</span>
 
-                </ul>
+                            <button class="accept-request">
+                                Accept
+                            </button>
+                        </li>
+                        -->
 
-            </section>
+                    </ul>
+
+                </section>
+
+
+                <!-- Friends -->
+
+                <section class="dashboard-section">
+
+                    <h3>Friends</h3>
+
+                    <ul id="friends-list">
+
+                        <!-- Example -->
+                        <!--
+                        <li>
+                            <button class="open-chat">
+                                Bob
+                            </button>
+                        </li>
+                        -->
+
+                    </ul>
+
+                </section>
+            </aside>
 
 
             <!-- Chat -->

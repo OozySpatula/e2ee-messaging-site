@@ -9,6 +9,9 @@ import {
     getMe
 } from "./api.js";
 
+import { setupFriends } from "./friends.js";
+
+
 export async function setupAuth() {
 
     const loginForm =
@@ -41,23 +44,27 @@ export async function setupAuth() {
     const authCard =
         document.querySelector("#auth-card");
 
-    try {
-
-        const result =
-            await getMe();
-
+    async function showDashboard(user) {
 
         authCard.hidden = true;
 
         dashboardView.hidden = false;
 
-
         dashboardUsername.textContent =
-            result.user.username;
-
+            user.username;
 
         dashboardUserId.textContent =
-            result.user.id;
+            user.id;
+
+        await setupFriends();
+    }
+
+    try {
+
+        const result =
+            await getMe();
+
+        await showDashboard(result.user);
 
     } catch {
 
@@ -108,15 +115,7 @@ export async function setupAuth() {
 
                 loginMessage.textContent = "";
 
-                authCard.hidden = true;
-
-                dashboardView.hidden = false;
-
-                dashboardUsername.textContent =
-                    result.user.username;
-
-                dashboardUserId.textContent =
-                    result.user.id;
+                await showDashboard(result.user);
 
             } catch (error) {
 

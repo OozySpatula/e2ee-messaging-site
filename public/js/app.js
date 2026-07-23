@@ -61,5 +61,4 @@ document
 
 
 
-setupAuth();
-setupFriends();
+await setupAuth();
