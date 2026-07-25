@@ -1,237 +1,170 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>E2EE Messenger</title>
 
-    <link rel="stylesheet" href="css/style.css">
-</head>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
 
-<body>
-
-<main class="container">
-
-    <section class="card" id="auth-card">
-
+  <body>
+    <main class="container">
+      <section class="card" id="auth-card">
         <h1>E2EE Messenger</h1>
-
 
         <!-- Login -->
 
         <div id="login-view">
+          <h2>Login</h2>
 
-            <h2>Login</h2>
+          <form id="login-form" method="post">
+            <label for="login-username"> Username </label>
 
-            <form id="login-form" method="post">
+            <input
+              id="login-username"
+              name="username"
+              type="text"
+              autocomplete="username"
+              required
+            />
 
-                <label for="login-username">
-                    Username
-                </label>
+            <label for="login-password"> Password </label>
 
-                <input
-                    id="login-username"
-                    name="username"
-                    type="text"
-                    autocomplete="username"
-                    required
-                >
+            <input
+              id="login-password"
+              name="password"
+              type="password"
+              autocomplete="current-password"
+              required
+            />
 
+            <p
+              id="login-message"
+              class="message"
+              role="alert"
+              aria-live="polite"
+            ></p>
 
-                <label for="login-password">
-                    Password
-                </label>
+            <button type="submit">Login</button>
+          </form>
 
-                <input
-                    id="login-password"
-                    name="password"
-                    type="password"
-                    autocomplete="current-password"
-                    required
-                >
-
-
-                <p
-                    id="login-message"
-                    class="message"
-                    role="alert"
-                    aria-live="polite">
-                </p>
-
-
-                <button type="submit">
-                    Login
-                </button>
-
-            </form>
-
-
-            <p>
-                Don't have an account?
-                <button
-                    class="link-button"
-                    id="show-register">
-                    Register
-                </button>
-            </p>
-
+          <p>
+            Don't have an account?
+            <button class="link-button" id="show-register">Register</button>
+          </p>
         </div>
-
 
         <!-- Register -->
 
         <div id="register-view" hidden>
+          <h2>Create Account</h2>
 
-            <h2>Create Account</h2>
+          <form id="register-form" method="post">
+            <label for="register-username"> Username </label>
 
+            <input
+              id="register-username"
+              name="username"
+              type="text"
+              minlength="3"
+              maxlength="20"
+              autocomplete="username"
+              required
+            />
 
-            <form id="register-form" method="post">
+            <label for="register-password"> Password </label>
 
+            <input
+              id="register-password"
+              name="password"
+              type="password"
+              autocomplete="new-password"
+              required
+            />
 
-                <label for="register-username">
-                    Username
-                </label>
+            <small>
+              Minimum 12 characters, uppercase, lowercase, number, special
+              character
+            </small>
 
-                <input
-                    id="register-username"
-                    name="username"
-                    type="text"
-                    minlength="3"
-                    maxlength="20"
-                    autocomplete="username"
-                    required
-                >
+            <label for="register-confirm"> Confirm Password </label>
 
+            <input
+              id="register-confirm"
+              name="confirm"
+              type="password"
+              autocomplete="new-password"
+              required
+            />
 
-                <label for="register-password">
-                    Password
-                </label>
+            <p
+              id="register-message"
+              class="message"
+              role="alert"
+              aria-live="polite"
+            ></p>
 
-                <input
-                    id="register-password"
-                    name="password"
-                    type="password"
-                    autocomplete="new-password"
-                    required
-                >
+            <button type="submit">Register</button>
+          </form>
 
+          <p>
+            Already have an account?
 
-                <small>
-                    Minimum 12 characters, uppercase,
-                    lowercase, number, special character
-                </small>
+            <button class="link-button" id="show-login">Login</button>
+          </p>
+        </div>
+      </section>
 
+      <div id="dashboard-view" hidden>
+        <h2>Dashboard</h2>
 
-                <label for="register-confirm">
-                    Confirm Password
-                </label>
+        <aside id="sidebar">
+          <!-- Account -->
 
-                <input
-                    id="register-confirm"
-                    name="confirm"
-                    type="password"
-                    autocomplete="new-password"
-                    required
-                >
-
-
-                <p
-                    id="register-message"
-                    class="message"
-                    role="alert"
-                    aria-live="polite">
-                </p>
-
-
-                <button type="submit">
-                    Register
-                </button>
-
-
-            </form>
-
+          <section class="dashboard-section">
+            <h3>Your Account</h3>
 
             <p>
-                Already have an account?
-
-                <button
-                    class="link-button"
-                    id="show-login">
-                    Login
-                </button>
+              <strong>Username:</strong>
+              <span id="dashboard-username"></span>
             </p>
 
+            <p>
+              <strong>User ID:</strong>
+              <code id="dashboard-user-id"></code>
+            </p>
+          </section>
 
-        </div>
+          <!-- Add Friend -->
 
-    </section>
+          <section class="dashboard-section">
+            <h3>Add Friend</h3>
 
-    <div id="dashboard-view" hidden>
+            <form id="friend-request-form" method="post">
+              <label for="friend-id"> Friend User ID </label>
 
-            <h2>Dashboard</h2>
+              <input
+                id="friend-id"
+                name="friend-id"
+                type="text"
+                placeholder="Enter user ID"
+                required
+              />
 
-            <aside id="sidebar">
+              <button type="submit">Send Friend Request</button>
+            </form>
+          </section>
 
-                <!-- Account -->
+          <!-- Friend Requests -->
 
-                <section class="dashboard-section">
+          <section class="dashboard-section">
+            <h3>Friend Requests</h3>
 
-                    <h3>Your Account</h3>
-
-                    <p>
-                        <strong>Username:</strong>
-                        <span id="dashboard-username"></span>
-                    </p>
-
-                    <p>
-                        <strong>User ID:</strong>
-                        <code id="dashboard-user-id"></code>
-                    </p>
-
-                </section>
-
-
-                <!-- Add Friend -->
-
-                <section class="dashboard-section">
-
-                    <h3>Add Friend</h3>
-
-                    <form id="friend-request-form" method="post">
-
-                        <label for="friend-id">
-                            Friend User ID
-                        </label>
-
-                        <input
-                            id="friend-id"
-                            name="friend-id"
-                            type="text"
-                            placeholder="Enter user ID"
-                            required
-                        >
-
-                        <button type="submit">
-                            Send Friend Request
-                        </button>
-
-                    </form>
-
-                </section>
-
-
-                <!-- Friend Requests -->
-
-                <section class="dashboard-section">
-
-                    <h3>Friend Requests</h3>
-
-                    <ul id="friend-requests-list">
-
-                        <!-- Example -->
-                        <!--
+            <ul id="friend-requests-list">
+              <!-- Example -->
+              <!--
                         <li>
                             <span>Alice</span>
 
@@ -240,81 +173,53 @@
                             </button>
                         </li>
                         -->
+            </ul>
+          </section>
 
-                    </ul>
+          <!-- Friends -->
 
-                </section>
+          <section class="dashboard-section">
+            <h3>Friends</h3>
 
-
-                <!-- Friends -->
-
-                <section class="dashboard-section">
-
-                    <h3>Friends</h3>
-
-                    <ul id="friends-list">
-
-                        <!-- Example -->
-                        <!--
+            <ul id="friends-list">
+              <!-- Example -->
+              <!--
                         <li>
                             <button class="open-chat">
                                 Bob
                             </button>
                         </li>
                         -->
+            </ul>
+          </section>
+        </aside>
 
-                    </ul>
+        <!-- Chat -->
 
-                </section>
-            </aside>
+        <section class="dashboard-section">
+          <h3 id="chat-title">Select a friend</h3>
 
+          <div id="messages">
+            <!-- Messages inserted here -->
+          </div>
 
-            <!-- Chat -->
+          <form id="message-form" method="post">
+            <label for="message-input"> Message </label>
 
-            <section class="dashboard-section">
+            <input
+              id="message-input"
+              name="message"
+              type="text"
+              placeholder="Type a message..."
+              autocomplete="off"
+            />
 
-                <h3 id="chat-title">
-                    Select a friend
-                </h3>
+            <button type="submit">Send</button>
+          </form>
+        </section>
+      </div>
+    </main>
 
-                <div id="messages">
-
-                    <!-- Messages inserted here -->
-
-                </div>
-
-                <form id="message-form" method="post">
-
-                    <label for="message-input">
-                        Message
-                    </label>
-
-                    <input
-                        id="message-input"
-                        name="message"
-                        type="text"
-                        placeholder="Type a message..."
-                        autocomplete="off"
-                    >
-
-                    <button type="submit">
-                        Send
-                    </button>
-
-                </form>
-
-            </section>
-
-        </div>
-
-</main>
-
-
-<script
-    type="module"
-    src="js/app.js">
-</script>
-
-</body>
-
+    <script type="module" src="js/app.js"></script>
+  </body>
 </html>

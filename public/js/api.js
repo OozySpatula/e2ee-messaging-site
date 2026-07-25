@@ -1,183 +1,103 @@
 async function request(endpoint, options = {}) {
+  const response = await fetch(`/api${endpoint}`, {
+    headers: {
+      "Content-Type": "application/json",
+    },
 
-    const response = await fetch(`/api${endpoint}`, {
+    credentials: "include",
 
-        headers: {
-            "Content-Type": "application/json"
-        },
+    ...options,
+  });
 
-        credentials: "include",
+  const data = await response.json();
 
-        ...options
+  if (!response.ok) {
+    throw new Error(data.message || "API request failed");
+  }
 
-    });
-
-
-    const data = await response.json();
-
-
-    if (!response.ok) {
-
-        throw new Error(
-            data.message || "API request failed"
-        );
-
-    }
-
-
-    return data;
-
+  return data;
 }
 
-export function register(
-    username,
-    password,
-    publicKey
-) {
+export function register(username, password, publicKey) {
+  return request("/auth", {
+    method: "POST",
 
-    return request("/auth", {
+    body: JSON.stringify({
+      action: "register",
 
-        method: "POST",
+      username,
 
-        body: JSON.stringify({
+      password,
 
-            action: "register",
-
-            username,
-
-            password,
-
-            publicKey
-
-        })
-
-    });
-
+      publicKey,
+    }),
+  });
 }
-
-
 
 export function login(username, password) {
+  return request("/auth", {
+    method: "POST",
 
-    return request("/auth", {
-
-        method: "POST",
-
-        body: JSON.stringify({
-
-            action: "login",
-            username,
-            password
-
-        })
-
-    });
-
+    body: JSON.stringify({
+      action: "login",
+      username,
+      password,
+    }),
+  });
 }
-
-
 
 export function sendFriendRequest(receiverId) {
+  return request("/friends", {
+    method: "POST",
 
-    return request("/friends", {
-
-        method: "POST",
-
-        body: JSON.stringify({
-
-            action: "request",
-            receiverId
-
-        })
-
-    });
-
+    body: JSON.stringify({
+      action: "request",
+      receiverId,
+    }),
+  });
 }
-
-
 
 export function acceptFriendRequest(requestId) {
+  return request("/friends", {
+    method: "POST",
 
-    return request("/friends", {
-
-        method: "POST",
-
-        body: JSON.stringify({
-
-            action: "accept",
-            requestId
-
-        })
-
-    });
-
+    body: JSON.stringify({
+      action: "accept",
+      requestId,
+    }),
+  });
 }
-
-
 
 export function getFriendRequests() {
-
-    return request(
-        "/friends?action=requests"
-    );
-
+  return request("/friends?action=requests");
 }
 
-
-
 export function getFriends() {
-
-    return request(
-        "/friends?action=friends"
-    );
-
+  return request("/friends?action=friends");
 }
 
 export function getMe() {
-
-    return request("/me");
-
+  return request("/me");
 }
 
-export function sendMessage(
-    receiverId,
-    ciphertext
-) {
+export function sendMessage(receiverId, ciphertext) {
+  return request("/messages", {
+    method: "POST",
 
-    return request("/messages", {
+    body: JSON.stringify({
+      action: "send",
 
-        method: "POST",
+      receiverId,
 
-        body: JSON.stringify({
-
-            action: "send",
-
-            receiverId,
-
-            ciphertext
-
-        })
-
-    });
-
+      ciphertext,
+    }),
+  });
 }
 
-export function getMessages(
-    friendId
-) {
-
-    return request(
-
-        `/messages?action=list&friendId=${friendId}`
-
-    );
-
+export function getMessages(friendId) {
+  return request(`/messages?action=list&friendId=${friendId}`);
 }
 
-export function getFriendPublicKey(
-    friendId
-) {
-    return request(
-        `/users?action=publicKey&id=${friendId}`
-    )
+export function getFriendPublicKey(friendId) {
+  return request(`/users?action=publicKey&id=${friendId}`);
 }

@@ -2,241 +2,153 @@ import { supabase } from "./supabase.js";
 import { authenticate } from "./authenticate.js";
 
 export default async function handler(req, res) {
-
-    try {
-
-        const userId = await authenticate(req);
-
-
-        if (!userId) {
-            return res.status(401).json({
-                message: "Unauthorized"
-            });
-        }
-
-        //
-        // Send friend request
-        //
-
-        if (
-            req.method === "POST" &&
-            req.body.action === "request"
-        ) {
-
-            const {
-                receiverId
-            } = req.body;
-
-
-            if (userId === receiverId) {
-
-                return res.status(400).json({
-                    message:
-                        "You cannot add yourself."
-                });
-
-            }
-
-
-            const { data: receiver } =
-                await supabase
-                    .from("users")
-                    .select("id")
-                    .eq("id", receiverId)
-                    .maybeSingle();
-
-
-            if (!receiver) {
-
-                return res.status(404).json({
-                    message:
-                        "User not found."
-                });
-
-            }
-
-
-            const { data: existingFriend } =
-                await supabase
-                    .from("friends")
-                    .select("id")
-                    .or(
-                        `and(user1_id.eq.${userId},user2_id.eq.${receiverId}),and(user1_id.eq.${receiverId},user2_id.eq.${userId})`
-                    )
-                    .maybeSingle();
-
-
-            if (existingFriend) {
-
-                return res.status(409).json({
-                    message:
-                        "Already friends."
-                });
-
-            }
-
-
-            const { data: existingRequest } =
-                await supabase
-                    .from("friend_requests")
-                    .select("id")
-                    .or(
-                        `and(sender_id.eq.${userId},receiver_id.eq.${receiverId}),and(sender_id.eq.${receiverId},receiver_id.eq.${userId})`
-                    )
-                    .maybeSingle();
-
-
-            if (existingRequest) {
-
-                return res.status(409).json({
-                    message:
-                        "Friend request already exists."
-                });
-
-            }
-
-
-            const { error } =
-                await supabase
-                    .from("friend_requests")
-                    .insert({
-
-                        sender_id:
-                            userId,
-
-                        receiver_id:
-                            receiverId
-
-                    });
-
-
-            if (error) {
-
-                throw error;
-
-            }
-
-
-            return res.json({
-
-                message:
-                    "Friend request sent."
-
-            });
-
-        }
-
-
-
-        //
-        // Accept request
-        //
-
-        if (
-            req.method === "POST" &&
-            req.body.action === "accept"
-        ) {
-
-            const {
-                requestId
-            } = req.body;
-
-
-            const { data: request, error } =
-                await supabase
-                    .from("friend_requests")
-                    .select("*")
-                    .eq("id", requestId)
-                    .eq("receiver_id", userId)
-                    .maybeSingle();
-
-
-            if (error) {
-                throw error;
-            }
-
-
-            if (!request) {
-
-                return res.status(404).json({
-                    message:
-                        "Friend request not found."
-                });
-
-            }
-
-            const { error: friendError } =
-                await supabase
-                    .from("friends")
-                    .insert({
-                        user1_id: request.sender_id,
-                        user2_id: request.receiver_id
-                    });
-
-
-            if (friendError) {
-                throw friendError;
-            }
-
-            await supabase
-                .from("friend_requests")
-                .delete()
-                .eq("id", requestId);
-
-
-            return res.json({
-
-                message:
-                    "Friend request accepted."
-
-            });
-
-        }
-
-
-
-        //
-        // List requests
-        //
-
-        if (
-            req.method === "GET" &&
-            req.query.action === "requests"
-        ) {
-
-            const { data } =
-                await supabase
-                    .from("friend_requests")
-                    .select(`
+  try {
+    const userId = await authenticate(req);
+
+    if (!userId) {
+      return res.status(401).json({
+        message: "Unauthorized",
+      });
+    }
+
+    //
+    // Send friend request
+    //
+
+    if (req.method === "POST" && req.body.action === "request") {
+      const { receiverId } = req.body;
+
+      if (userId === receiverId) {
+        return res.status(400).json({
+          message: "You cannot add yourself.",
+        });
+      }
+
+      const { data: receiver } = await supabase
+        .from("users")
+        .select("id")
+        .eq("id", receiverId)
+        .maybeSingle();
+
+      if (!receiver) {
+        return res.status(404).json({
+          message: "User not found.",
+        });
+      }
+
+      const { data: existingFriend } = await supabase
+        .from("friends")
+        .select("id")
+        .or(
+          `and(user1_id.eq.${userId},user2_id.eq.${receiverId}),and(user1_id.eq.${receiverId},user2_id.eq.${userId})`,
+        )
+        .maybeSingle();
+
+      if (existingFriend) {
+        return res.status(409).json({
+          message: "Already friends.",
+        });
+      }
+
+      const { data: existingRequest } = await supabase
+        .from("friend_requests")
+        .select("id")
+        .or(
+          `and(sender_id.eq.${userId},receiver_id.eq.${receiverId}),and(sender_id.eq.${receiverId},receiver_id.eq.${userId})`,
+        )
+        .maybeSingle();
+
+      if (existingRequest) {
+        return res.status(409).json({
+          message: "Friend request already exists.",
+        });
+      }
+
+      const { error } = await supabase.from("friend_requests").insert({
+        sender_id: userId,
+
+        receiver_id: receiverId,
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      return res.json({
+        message: "Friend request sent.",
+      });
+    }
+
+    //
+    // Accept request
+    //
+
+    if (req.method === "POST" && req.body.action === "accept") {
+      const { requestId } = req.body;
+
+      const { data: request, error } = await supabase
+        .from("friend_requests")
+        .select("*")
+        .eq("id", requestId)
+        .eq("receiver_id", userId)
+        .maybeSingle();
+
+      if (error) {
+        throw error;
+      }
+
+      if (!request) {
+        return res.status(404).json({
+          message: "Friend request not found.",
+        });
+      }
+
+      const { error: friendError } = await supabase.from("friends").insert({
+        user1_id: request.sender_id,
+        user2_id: request.receiver_id,
+      });
+
+      if (friendError) {
+        throw friendError;
+      }
+
+      await supabase.from("friend_requests").delete().eq("id", requestId);
+
+      return res.json({
+        message: "Friend request accepted.",
+      });
+    }
+
+    //
+    // List requests
+    //
+
+    if (req.method === "GET" && req.query.action === "requests") {
+      const { data } = await supabase
+        .from("friend_requests")
+        .select(
+          `
                         id,
                         sender:users!friend_requests_sender_id_fkey(
                             id,
                             username
                         )
-                    `)
-                    .eq("receiver_id", userId);
+                    `,
+        )
+        .eq("receiver_id", userId);
 
+      return res.json(data);
+    }
 
-            return res.json(data);
+    //
+    // List friends
+    //
 
-        }
-
-
-
-        //
-        // List friends
-        //
-
-        if (
-            req.method === "GET" &&
-            req.query.action === "friends"
-        ) {
-
-
-            const { data } =
-                await supabase
-                    .from("friends")
-                    .select(`
+    if (req.method === "GET" && req.query.action === "friends") {
+      const { data } = await supabase
+        .from("friends")
+        .select(
+          `
                         user1:users!friends_user1_id_fkey(
                             id,
                             username
@@ -245,74 +157,41 @@ export default async function handler(req, res) {
                             id,
                             username
                         )
-                    `)
-                    .or(
-                        `user1_id.eq.${userId},user2_id.eq.${userId}`
-                    );
+                    `,
+        )
+        .or(`user1_id.eq.${userId},user2_id.eq.${userId}`);
 
+      const friends = (data ?? []).map((friend) => {
+        return friend.user1.id === userId ? friend.user2 : friend.user1;
+      });
 
-            const friends =
-                (data ?? []).map(friend => {
-
-                    return friend.user1.id === userId
-                        ? friend.user2
-                        : friend.user1;
-
-                });
-
-
-            return res.json(friends);
-
-        }
-
-
-        //
-        // Get friend's public key
-        //
-
-        if (
-            req.method === "GET" &&
-            req.query.action === "publicKey"
-        ) {
-
-            const { data } =
-                await supabase
-                    .from("users")
-                    .select("public_key")
-                    .eq(
-                        "id",
-                        req.query.id
-                    )
-                    .single();
-
-
-            return res.json({
-                publicKey:
-                    data.public_key
-            });
-
-        }
-
-
-
-        return res.status(400).json({
-
-            message:
-                "Invalid request."
-
-        });
-
-    } catch (error) {
-
-        console.error(error);
-
-        return res.status(500).json({
-
-            message:
-                "Server error."
-
-        });
-
+      return res.json(friends);
     }
 
+    //
+    // Get friend's public key
+    //
+
+    if (req.method === "GET" && req.query.action === "publicKey") {
+      const { data } = await supabase
+        .from("users")
+        .select("public_key")
+        .eq("id", req.query.id)
+        .single();
+
+      return res.json({
+        publicKey: data.public_key,
+      });
+    }
+
+    return res.status(400).json({
+      message: "Invalid request.",
+    });
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      message: "Server error.",
+    });
+  }
 }

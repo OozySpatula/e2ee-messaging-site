@@ -15,8 +15,8 @@ export default [
       ],
 
       // Code quality
-      "eqeqeq": ["error", "always"],
-      "curly": ["warn", "all"],
+      eqeqeq: ["error", "always"],
+      curly: ["warn", "all"],
       "no-console": "warn",
 
       // Better practices

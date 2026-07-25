@@ -1,60 +1,31 @@
-import {
-    setupAuth
-} from "./auth.js";
+import { setupAuth } from "./auth.js";
 
-const loginView =
-    document.querySelector("#login-view");
+const loginView = document.querySelector("#login-view");
 
+const registerView = document.querySelector("#register-view");
 
-const registerView =
-    document.querySelector("#register-view");
+const loginForm = document.querySelector("#login-form");
 
-const loginForm =
-    document.querySelector("#login-form");
+const registerForm = document.querySelector("#register-form");
 
-const registerForm =
-    document.querySelector("#register-form");
+const loginMessage = document.querySelector("#login-message");
 
-const loginMessage =
-    document.querySelector("#login-message");
+const registerMessage = document.querySelector("#register-message");
 
-const registerMessage =
-    document.querySelector("#register-message");
-    
+document.querySelector("#show-register").addEventListener("click", () => {
+  loginView.hidden = true;
+  loginForm.reset();
+  loginMessage.textContent = "";
 
+  registerView.hidden = false;
+});
 
-document
-    .querySelector("#show-register")
-    .addEventListener(
-        "click",
-        () => {
+document.querySelector("#show-login").addEventListener("click", () => {
+  registerView.hidden = true;
+  registerForm.reset();
+  registerMessage.textContent = "";
 
-            loginView.hidden = true;
-            loginForm.reset();
-            loginMessage.textContent = "";
-
-            registerView.hidden = false;
-
-        }
-    );
-
-
-
-document
-    .querySelector("#show-login")
-    .addEventListener(
-        "click",
-        () => {
-
-            registerView.hidden = true;
-            registerForm.reset();
-            registerMessage.textContent = "";
-
-            loginView.hidden = false;
-
-        }
-    );
-
-
+  loginView.hidden = false;
+});
 
 await setupAuth();
