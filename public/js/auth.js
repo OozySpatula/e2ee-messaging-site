@@ -11,6 +11,14 @@ import {
 
 import { setupFriends } from "./friends.js";
 
+import {
+    generateKeyPair,
+    exportPublicKey
+} from "./crypto.js";
+
+import {
+    savePrivateKey
+} from "./keyStore.js";
 
 export async function setupAuth() {
 
@@ -190,12 +198,26 @@ export async function setupAuth() {
 
 
             try {
+                const keyPair =
+                    await generateKeyPair();
+
+                const publicKey =
+                    await exportPublicKey(
+                        keyPair.publicKey
+                    );
 
                 const result =
                     await register(
                         username,
-                        password
+                        password,
+                        publicKey
                     );
+                
+                await savePrivateKey(
+                    keyPair.privateKey
+                );
+
+                console.log("Private key object:", keyPair.privateKey);
 
                 registerMessage.textContent =
                     result.message;

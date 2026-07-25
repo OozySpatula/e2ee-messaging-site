@@ -29,9 +29,11 @@ async function request(endpoint, options = {}) {
 
 }
 
-
-
-export function register(username, password) {
+export function register(
+    username,
+    password,
+    publicKey
+) {
 
     return request("/auth", {
 
@@ -40,8 +42,12 @@ export function register(username, password) {
         body: JSON.stringify({
 
             action: "register",
+
             username,
-            password
+
+            password,
+
+            publicKey
 
         })
 

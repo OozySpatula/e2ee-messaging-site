@@ -39,7 +39,8 @@ export default async function handler(req, res) {
     const {
         action,
         username,
-        password
+        password,
+        publicKey
     } = req.body;
 
 
@@ -68,7 +69,17 @@ export default async function handler(req, res) {
 
             }
 
+            if (
+                typeof publicKey !== "string" ||
+                publicKey.length < 20
+            ) {
 
+                return res.status(400).json({
+                    message:
+                        "Invalid public key"
+                });
+
+            }
 
             const { data: existing } =
                 await supabase
@@ -106,7 +117,10 @@ export default async function handler(req, res) {
                         username,
 
                         password_hash:
-                            passwordHash
+                            passwordHash,
+
+                        public_key:
+                            publicKey
 
                     });
 
@@ -238,7 +252,8 @@ export default async function handler(req, res) {
 
                 user: {
                     id: user.id,
-                    username: user.username
+                    username: user.username,
+                    publicKey: user.public_key
                 }
 
             });
