@@ -6,8 +6,16 @@ import {
   sendMessage,
   getMessages,
   getMe,
-  getFriendPublicKey,
+  getFriendPublicKey
 } from "./api.js";
+import { 
+    importPublicKey,
+    deriveAESKey,
+    deriveSharedSecret,
+    encryptMessage,
+    decryptMessage
+ } from "./crypto.js";
+import { getPrivateKey } from "./keyStore.js";
 
 let friendsInitialized = false;
 
@@ -81,16 +89,70 @@ export async function setupFriends() {
     }
 
     try {
-      const friendPublicKey = await getFriendPublicKey(currentFriend.id);
 
-      await sendMessage(currentFriend.id, message);
+    // Get friend's public key from server
+    const friendPublicKeyBase64 =
+        await getFriendPublicKey(
+            currentFriend.id
+        );
 
-      messageInput.value = "";
 
-      await loadConversation(currentFriend);
-    } catch (error) {
-      alert(error.message);
-    }
+    // Convert base64 public key back into CryptoKey
+    const friendPublicKey =
+        await importPublicKey(
+            friendPublicKeyBase64.publicKey
+        );
+
+
+    // Load your private key from IndexedDB
+    const privateKey =
+        await getPrivateKey();
+
+
+    // X25519 key agreement
+    const sharedSecret =
+        await deriveSharedSecret(
+            privateKey,
+            friendPublicKey
+        );
+
+
+    // Turn shared secret into AES-GCM key
+    const aesKey =
+        await deriveAESKey(
+            sharedSecret
+        );
+
+
+    // Encrypt message
+    const encrypted =
+        await encryptMessage(
+            message,
+            aesKey
+        );
+
+
+    // Send ciphertext only
+    await sendMessage(
+        currentFriend.id,
+        encrypted.ciphertext,
+        encrypted.iv
+    );
+
+
+    messageInput.value = "";
+
+
+    await loadConversation(
+        currentFriend
+    );
+
+
+} catch (error) {
+
+    alert(error.message);
+
+}
   });
 
   async function loadFriendRequests() {
@@ -181,21 +243,52 @@ export async function setupFriends() {
     try {
       const messages = await getMessages(friend.id);
 
+      const privateKey =
+            await getPrivateKey();
+
+        const friendPublicKeyBase64 =
+            await getFriendPublicKey(friend.id);
+
+        const friendPublicKey =
+            await importPublicKey(
+                friendPublicKeyBase64.publicKey
+            );
+
+        const sharedSecret =
+            await deriveSharedSecret(
+                privateKey,
+                friendPublicKey
+            );
+
+        const aesKey =
+            await deriveAESKey(
+                sharedSecret
+            );
+
       // Ignore old requests that finished late
       if (thisLoad !== conversationLoadId) {
         return;
       }
 
       for (const message of messages) {
-        const p = document.createElement("p");
+            const plaintext =
+                await decryptMessage(
+                    message.ciphertext,
+                    message.iv,
+                    aesKey
+                );
 
-        p.textContent =
-          message.sender_id === user.id
-            ? `You: ${message.ciphertext}`
-            : `${friend.username}: ${message.ciphertext}`;
+            const p =
+                document.createElement("p");
 
-        messagesDiv.appendChild(p);
-      }
+            p.textContent =
+                message.sender_id === user.id
+                    ? `You: ${plaintext}`
+                    : `${friend.username}: ${plaintext}`;
+
+            messagesDiv.appendChild(p);
+
+        }
     } catch (error) {}
   }
 }

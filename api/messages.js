@@ -16,7 +16,7 @@ export default async function handler(req, res) {
     //
 
     if (req.method === "POST" && req.body.action === "send") {
-      const { receiverId, ciphertext } = req.body;
+      const { receiverId, ciphertext, iv } = req.body;
 
       if (!ciphertext) {
         return res.status(400).json({
@@ -40,10 +40,9 @@ export default async function handler(req, res) {
 
       const { error } = await supabase.from("messages").insert({
         sender_id: userId,
-
         receiver_id: receiverId,
-
         ciphertext,
+        iv
       });
 
       if (error) {
@@ -84,6 +83,7 @@ export default async function handler(req, res) {
                         sender_id,
                         receiver_id,
                         ciphertext,
+                        iv,
                         sent_at
                     `,
         )

@@ -8,6 +8,8 @@ create table messages (
 
     ciphertext text not null,
 
+    iv text not null,
+
     sent_at timestamptz default now()
 
 );

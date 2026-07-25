@@ -80,18 +80,30 @@ export function getMe() {
   return request("/me");
 }
 
-export function sendMessage(receiverId, ciphertext) {
-  return request("/messages", {
-    method: "POST",
+export function sendMessage(
+    receiverId,
+    ciphertext,
+    iv
+) {
 
-    body: JSON.stringify({
-      action: "send",
+    return request("/messages", {
 
-      receiverId,
+        method: "POST",
 
-      ciphertext,
-    }),
-  });
+        body: JSON.stringify({
+
+            action: "send",
+
+            receiverId,
+
+            ciphertext,
+
+            iv
+
+        })
+
+    });
+
 }
 
 export function getMessages(friendId) {
@@ -99,5 +111,5 @@ export function getMessages(friendId) {
 }
 
 export function getFriendPublicKey(friendId) {
-  return request(`/users?action=publicKey&id=${friendId}`);
+  return request(`/friends?action=publicKey&id=${friendId}`);
 }
