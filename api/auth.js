@@ -128,8 +128,6 @@ export default async function handler(req, res) {
 
             if (error) {
 
-                console.error(error);
-
                 return res.status(500).json({
                     message:
                         "Could not create account"
@@ -221,8 +219,6 @@ export default async function handler(req, res) {
 
             if (sessionError) {
 
-                console.error(sessionError);
-
                 return res.status(500).json({
                     message:
                         "Could not create session"
@@ -272,9 +268,6 @@ export default async function handler(req, res) {
 
 
     } catch(error) {
-
-        console.error(error);
-
 
         return res.status(500).json({
 

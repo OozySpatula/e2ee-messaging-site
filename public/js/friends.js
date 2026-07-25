@@ -227,8 +227,6 @@ export async function setupFriends() {
 
                         } catch (error) {
 
-                            console.error(error);
-
                         }
 
                     }
@@ -244,7 +242,6 @@ export async function setupFriends() {
 
         } catch (error) {
 
-            console.error(error);
 
         }
 
@@ -321,9 +318,6 @@ export async function setupFriends() {
 
 
         } catch (error) {
-
-            console.error(error);
-
         }
 
     }
@@ -383,9 +377,6 @@ export async function setupFriends() {
 
 
         } catch (error) {
-
-            console.error(error);
-
         }
 
     }

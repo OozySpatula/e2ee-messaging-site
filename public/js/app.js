@@ -2,10 +2,6 @@ import {
     setupAuth
 } from "./auth.js";
 
-import {
-    setupFriends
-} from "./friends.js"
-
 const loginView =
     document.querySelector("#login-view");
 

@@ -42,12 +42,6 @@ export async function setupAuth() {
 
     const dashboardUserId =
         document.querySelector("#dashboard-user-id");
-
-    const loginView =
-        document.querySelector("#login-view");
-    
-    const registerView =
-        document.querySelector("#register-view");
     
     const authCard =
         document.querySelector("#auth-card");
@@ -216,8 +210,6 @@ export async function setupAuth() {
                 await savePrivateKey(
                     keyPair.privateKey
                 );
-
-                console.log("Private key object:", keyPair.privateKey);
 
                 registerMessage.textContent =
                     result.message;
