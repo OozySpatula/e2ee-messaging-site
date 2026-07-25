@@ -5,7 +5,8 @@ import {
     getFriends,
     sendMessage,
     getMessages,
-    getMe
+    getMe,
+    getFriendPublicKey
 } from "./api.js";
 
 
@@ -130,10 +131,16 @@ export async function setupFriends() {
 
             try {
 
+                const friendPublicKey = await getFriendPublicKey(
+                    currentFriend.id
+                );
+
                 await sendMessage(
                     currentFriend.id,
                     message
                 );
+
+
 
 
                 messageInput.value = "";

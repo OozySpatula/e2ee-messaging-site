@@ -266,6 +266,34 @@ export default async function handler(req, res) {
         }
 
 
+        //
+        // Get friend's public key
+        //
+
+        if (
+            req.method === "GET" &&
+            req.query.action === "publicKey"
+        ) {
+
+            const { data } =
+                await supabase
+                    .from("users")
+                    .select("public_key")
+                    .eq(
+                        "id",
+                        req.query.id
+                    )
+                    .single();
+
+
+            return res.json({
+                publicKey:
+                    data.public_key
+            });
+
+        }
+
+
 
         return res.status(400).json({
 

@@ -173,3 +173,11 @@ export function getMessages(
     );
 
 }
+
+export function getFriendPublicKey(
+    friendId
+) {
+    return request(
+        `/users?action=publicKey&id=${friendId}`
+    )
+}
