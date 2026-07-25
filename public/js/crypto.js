@@ -145,66 +145,98 @@ export async function deriveAESKey(
 
 }
 
-export async function deriveAESKey(
-    sharedSecret
+export async function encryptMessage(
+    message,
+    aesKey
 ) {
 
+    const iv =
+        crypto.getRandomValues(
+            new Uint8Array(12)
+        );
 
-    const keyMaterial =
-        await crypto.subtle.importKey(
 
-            "raw",
+    const encoded =
+        new TextEncoder()
+            .encode(message);
 
-            sharedSecret,
 
-            "HKDF",
+    const ciphertext =
+        await crypto.subtle.encrypt(
 
-            false,
+            {
+                name:"AES-GCM",
 
-            [
-                "deriveKey"
-            ]
+                iv
+
+            },
+
+            aesKey,
+
+            encoded
 
         );
 
 
-    return await crypto.subtle.deriveKey(
+    return {
 
-        {
-            name:"HKDF",
-
-            hash:"SHA-256",
-
-            salt:
-                new Uint8Array(),
-
-            info:
-                new TextEncoder()
-                    .encode(
-                        "chat encryption"
-                    )
-
-        },
+        ciphertext:
+            btoa(
+                String.fromCharCode(
+                    ...new Uint8Array(ciphertext)
+                )
+            ),
 
 
-        keyMaterial,
+        iv:
+            btoa(
+                String.fromCharCode(
+                    ...iv
+                )
+            )
+
+    };
+
+}
+
+export async function decryptMessage(
+    ciphertext,
+    iv,
+    aesKey
+) {
 
 
-        {
-            name:"AES-GCM",
-
-            length:256
-        },
-
-
-        false,
+    const encrypted =
+        Uint8Array.from(
+            atob(ciphertext),
+            c => c.charCodeAt(0)
+        );
 
 
-        [
-            "encrypt",
-            "decrypt"
-        ]
+    const ivBytes =
+        Uint8Array.from(
+            atob(iv),
+            c => c.charCodeAt(0)
+        );
 
-    );
+
+    const plaintext =
+        await crypto.subtle.decrypt(
+
+            {
+                name:"AES-GCM",
+
+                iv:ivBytes
+            },
+
+            aesKey,
+
+            encrypted
+
+        );
+
+
+    return new TextDecoder()
+        .decode(plaintext);
 
 }
