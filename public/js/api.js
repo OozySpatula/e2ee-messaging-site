@@ -1,12 +1,16 @@
 async function request(endpoint, options = {}) {
   const response = await fetch(`/api${endpoint}`, {
-    headers: {
-      "Content-Type": "application/json",
-    },
-
     credentials: "include",
 
     ...options,
+
+    headers: {
+      ...(options.body && {
+        "Content-Type": "application/json",
+      }),
+
+      ...options.headers,
+    },
   });
 
   const data = await response.json();
@@ -42,6 +46,16 @@ export function login(username, password) {
       action: "login",
       username,
       password,
+    }),
+  });
+}
+
+export function logout() {
+  return request("/auth", {
+    method: "POST",
+
+    body: JSON.stringify({
+      action: "logout",
     }),
   });
 }

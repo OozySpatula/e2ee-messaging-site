@@ -2,6 +2,8 @@ import argon2 from "argon2";
 import { supabase } from "./supabase.js";
 import crypto from "crypto";
 
+import { logout } from "./authenticate.js";
+
 function validateUsername(username) {
   return /^[a-zA-Z0-9_]{3,20}$/.test(username);
 }
@@ -146,6 +148,25 @@ export default async function handler(req, res) {
           username: user.username,
           publicKey: user.public_key,
         },
+      });
+    }
+
+    if (action === "logout") {
+      await logout(req);
+
+      res.setHeader(
+        "Set-Cookie",
+        [
+          "session=",
+          "HttpOnly",
+          "SameSite=Strict",
+          "Max-Age=0",
+          "Path=/",
+        ].join("; "),
+      );
+
+      return res.json({
+        message: "Logged out successfully",
       });
     }
 

@@ -1,6 +1,6 @@
 import { validateUsername, validatePassword } from "./validators.js";
 
-import { register, login, getMe } from "./api.js";
+import { register, login, logout, getMe } from "./api.js";
 
 import { setupFriends } from "./friends.js";
 
@@ -24,6 +24,8 @@ export async function setupAuth() {
   const dashboardUserId = document.querySelector("#dashboard-user-id");
 
   const authCard = document.querySelector("#auth-card");
+
+  const logoutButton = document.querySelector("#logout-button");
 
   async function showDashboard(user) {
     authCard.hidden = true;
@@ -134,6 +136,21 @@ export async function setupAuth() {
       registerMessage.textContent = error.message;
 
       registerMessage.className = "message error";
+    }
+  });
+
+  logoutButton.addEventListener("click", async () => {
+    try {
+      await logout();
+
+      dashboardView.hidden = true;
+      authCard.hidden = false;
+
+      document.querySelector("#messages").textContent = "";
+      document.querySelector("#chat-title").textContent = "Select a friend";
+
+    } catch (error) {
+      console.error("Logout failed:", error);
     }
   });
 }
