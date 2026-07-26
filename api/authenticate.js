@@ -20,10 +20,7 @@ function getSessionToken(req) {
 }
 
 function hashToken(token) {
-  return crypto
-    .createHash("sha256")
-    .update(token)
-    .digest("hex");
+  return crypto.createHash("sha256").update(token).digest("hex");
 }
 
 export async function authenticate(req) {
@@ -46,10 +43,7 @@ export async function authenticate(req) {
   }
 
   if (new Date(session.expires_at) < new Date()) {
-    await supabase
-      .from("sessions")
-      .delete()
-      .eq("token_hash", tokenHash);
+    await supabase.from("sessions").delete().eq("token_hash", tokenHash);
 
     return null;
   }
@@ -66,8 +60,5 @@ export async function logout(req) {
 
   const tokenHash = hashToken(token);
 
-  await supabase
-    .from("sessions")
-    .delete()
-    .eq("token_hash", tokenHash);
+  await supabase.from("sessions").delete().eq("token_hash", tokenHash);
 }

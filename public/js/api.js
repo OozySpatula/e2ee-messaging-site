@@ -94,30 +94,20 @@ export function getMe() {
   return request("/me");
 }
 
-export function sendMessage(
-    receiverId,
-    ciphertext,
-    iv
-) {
+export function sendMessage(receiverId, ciphertext, iv) {
+  return request("/messages", {
+    method: "POST",
 
-    return request("/messages", {
+    body: JSON.stringify({
+      action: "send",
 
-        method: "POST",
+      receiverId,
 
-        body: JSON.stringify({
+      ciphertext,
 
-            action: "send",
-
-            receiverId,
-
-            ciphertext,
-
-            iv
-
-        })
-
-    });
-
+      iv,
+    }),
+  });
 }
 
 export function getMessages(friendId) {

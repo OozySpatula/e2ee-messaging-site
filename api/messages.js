@@ -42,7 +42,7 @@ export default async function handler(req, res) {
         sender_id: userId,
         receiver_id: receiverId,
         ciphertext,
-        iv
+        iv,
       });
 
       if (error) {

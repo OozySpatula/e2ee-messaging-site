@@ -22,60 +22,27 @@ export async function savePrivateKey(key) {
 }
 
 export function getPrivateKey() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, 1);
 
-    return new Promise((resolve, reject) => {
+    request.onsuccess = (event) => {
+      const db = event.target.result;
 
-        const request =
-            indexedDB.open(
-                DB_NAME,
-                1
-            );
+      const tx = db.transaction(STORE, "readonly");
 
-        request.onsuccess =
-            event => {
+      const getRequest = tx.objectStore(STORE).get("private");
 
-                const db =
-                    event.target.result;
+      getRequest.onsuccess = () => {
+        resolve(getRequest.result);
+      };
 
-                const tx =
-                    db.transaction(
-                        STORE,
-                        "readonly"
-                    );
+      getRequest.onerror = () => {
+        reject(getRequest.error);
+      };
+    };
 
-                const getRequest =
-                    tx.objectStore(STORE)
-                        .get("private");
-
-                getRequest.onsuccess =
-                    () => {
-
-                        resolve(
-                            getRequest.result
-                        );
-
-                    };
-
-                getRequest.onerror =
-                    () => {
-
-                        reject(
-                            getRequest.error
-                        );
-
-                    };
-
-            };
-
-        request.onerror =
-            () => {
-
-                reject(
-                    request.error
-                );
-
-            };
-
-    });
-
+    request.onerror = () => {
+      reject(request.error);
+    };
+  });
 }

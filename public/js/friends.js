@@ -6,15 +6,15 @@ import {
   sendMessage,
   getMessages,
   getMe,
-  getFriendPublicKey
+  getFriendPublicKey,
 } from "./api.js";
-import { 
-    importPublicKey,
-    deriveAESKey,
-    deriveSharedSecret,
-    encryptMessage,
-    decryptMessage
- } from "./crypto.js";
+import {
+  importPublicKey,
+  deriveAESKey,
+  deriveSharedSecret,
+  encryptMessage,
+  decryptMessage,
+} from "./crypto.js";
 import { getPrivateKey } from "./keyStore.js";
 
 let friendsInitialized = false;
@@ -89,70 +89,38 @@ export async function setupFriends() {
     }
 
     try {
+      // Get friend's public key from server
+      const friendPublicKeyBase64 = await getFriendPublicKey(currentFriend.id);
 
-    // Get friend's public key from server
-    const friendPublicKeyBase64 =
-        await getFriendPublicKey(
-            currentFriend.id
-        );
+      // Convert base64 public key back into CryptoKey
+      const friendPublicKey = await importPublicKey(
+        friendPublicKeyBase64.publicKey,
+      );
 
+      // Load your private key from IndexedDB
+      const privateKey = await getPrivateKey();
 
-    // Convert base64 public key back into CryptoKey
-    const friendPublicKey =
-        await importPublicKey(
-            friendPublicKeyBase64.publicKey
-        );
+      // X25519 key agreement
+      const sharedSecret = await deriveSharedSecret(
+        privateKey,
+        friendPublicKey,
+      );
 
+      // Turn shared secret into AES-GCM key
+      const aesKey = await deriveAESKey(sharedSecret);
 
-    // Load your private key from IndexedDB
-    const privateKey =
-        await getPrivateKey();
+      // Encrypt message
+      const encrypted = await encryptMessage(message, aesKey);
 
+      // Send ciphertext only
+      await sendMessage(currentFriend.id, encrypted.ciphertext, encrypted.iv);
 
-    // X25519 key agreement
-    const sharedSecret =
-        await deriveSharedSecret(
-            privateKey,
-            friendPublicKey
-        );
+      messageInput.value = "";
 
-
-    // Turn shared secret into AES-GCM key
-    const aesKey =
-        await deriveAESKey(
-            sharedSecret
-        );
-
-
-    // Encrypt message
-    const encrypted =
-        await encryptMessage(
-            message,
-            aesKey
-        );
-
-
-    // Send ciphertext only
-    await sendMessage(
-        currentFriend.id,
-        encrypted.ciphertext,
-        encrypted.iv
-    );
-
-
-    messageInput.value = "";
-
-
-    await loadConversation(
-        currentFriend
-    );
-
-
-} catch (error) {
-
-    alert(error.message);
-
-}
+      await loadConversation(currentFriend);
+    } catch (error) {
+      alert(error.message);
+    }
   });
 
   async function loadFriendRequests() {
@@ -243,27 +211,20 @@ export async function setupFriends() {
     try {
       const messages = await getMessages(friend.id);
 
-      const privateKey =
-            await getPrivateKey();
+      const privateKey = await getPrivateKey();
 
-        const friendPublicKeyBase64 =
-            await getFriendPublicKey(friend.id);
+      const friendPublicKeyBase64 = await getFriendPublicKey(friend.id);
 
-        const friendPublicKey =
-            await importPublicKey(
-                friendPublicKeyBase64.publicKey
-            );
+      const friendPublicKey = await importPublicKey(
+        friendPublicKeyBase64.publicKey,
+      );
 
-        const sharedSecret =
-            await deriveSharedSecret(
-                privateKey,
-                friendPublicKey
-            );
+      const sharedSecret = await deriveSharedSecret(
+        privateKey,
+        friendPublicKey,
+      );
 
-        const aesKey =
-            await deriveAESKey(
-                sharedSecret
-            );
+      const aesKey = await deriveAESKey(sharedSecret);
 
       // Ignore old requests that finished late
       if (thisLoad !== conversationLoadId) {
@@ -271,24 +232,21 @@ export async function setupFriends() {
       }
 
       for (const message of messages) {
-            const plaintext =
-                await decryptMessage(
-                    message.ciphertext,
-                    message.iv,
-                    aesKey
-                );
+        const plaintext = await decryptMessage(
+          message.ciphertext,
+          message.iv,
+          aesKey,
+        );
 
-            const p =
-                document.createElement("p");
+        const p = document.createElement("p");
 
-            p.textContent =
-                message.sender_id === user.id
-                    ? `You: ${plaintext}`
-                    : `${friend.username}: ${plaintext}`;
+        p.textContent =
+          message.sender_id === user.id
+            ? `You: ${plaintext}`
+            : `${friend.username}: ${plaintext}`;
 
-            messagesDiv.appendChild(p);
-
-        }
+        messagesDiv.appendChild(p);
+      }
     } catch (error) {}
   }
 }

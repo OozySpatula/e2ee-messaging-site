@@ -148,7 +148,6 @@ export async function setupAuth() {
 
       document.querySelector("#messages").textContent = "";
       document.querySelector("#chat-title").textContent = "Select a friend";
-
     } catch (error) {
       console.error("Logout failed:", error);
     }

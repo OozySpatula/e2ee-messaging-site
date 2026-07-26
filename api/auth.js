@@ -156,13 +156,9 @@ export default async function handler(req, res) {
 
       res.setHeader(
         "Set-Cookie",
-        [
-          "session=",
-          "HttpOnly",
-          "SameSite=Strict",
-          "Max-Age=0",
-          "Path=/",
-        ].join("; "),
+        ["session=", "HttpOnly", "SameSite=Strict", "Max-Age=0", "Path=/"].join(
+          "; ",
+        ),
       );
 
       return res.json({
