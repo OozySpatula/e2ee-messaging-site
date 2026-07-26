@@ -148,6 +148,22 @@ export async function setupAuth() {
 
       document.querySelector("#messages").textContent = "";
       document.querySelector("#chat-title").textContent = "Select a friend";
+      
+      // Reset friend requests
+      const requestsList = document.querySelector("#friend-requests-list");
+      requestsList.replaceChildren();
+
+      const noRequests = document.createElement("li");
+      noRequests.textContent = "No pending requests.";
+      requestsList.appendChild(noRequests);
+
+      // Reset friends list
+      const friendsList = document.querySelector("#friends-list");
+      friendsList.replaceChildren();
+
+      const noFriends = document.createElement("li");
+      noFriends.textContent = "No friends yet.";
+      friendsList.appendChild(noFriends);
     } catch (error) {
       console.error("Logout failed:", error);
     }
