@@ -232,20 +232,29 @@ export async function setupFriends() {
       }
 
       for (const message of messages) {
-        const plaintext = await decryptMessage(
-          message.ciphertext,
-          message.iv,
-          aesKey,
-        );
+        try {
+          const plaintext = await decryptMessage(
+            message.ciphertext,
+            message.iv,
+            aesKey,
+          );
 
-        const p = document.createElement("p");
+          const p = document.createElement("p");
 
-        p.textContent =
-          message.sender_id === user.id
-            ? `You: ${plaintext}`
-            : `${friend.username}: ${plaintext}`;
+          p.textContent =
+            message.sender_id === user.id
+              ? `You: ${plaintext}`
+              : `${friend.username}: ${plaintext}`;
 
-        messagesDiv.appendChild(p);
+          messagesDiv.appendChild(p);
+
+        } catch (error) {
+          const p = document.createElement("p");
+
+          p.textContent = "[Message could not be verified]";
+
+          messagesDiv.appendChild(p);
+        }
       }
     } catch (error) {}
   }
